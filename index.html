@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中山抽水站AI智慧調度系統 | Zhongshan AI Dispatch System</title>
+    
+    <!-- 字體與圖標 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- 樣式表 -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 載入動畫 -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-container">
+            <div class="ai-logo">
+                <div class="logo-ring"></div>
+                <div class="logo-center">AI</div>
+            </div>
+            <div class="loading-text">
+                <h2>中山抽水站AI智慧調度系統</h2>
+                <p>正在初始化AI引擎...</p>
+                <div class="loading-bar">
+                    <div class="loading-progress"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div id="mainContainer" class="main-container">
+        
+        <!-- 頂部標題欄 -->
+        <header class="main-header">
+            <div class="header-content">
+                <div class="station-brand">
+                    <div class="brand-logo">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <div class="brand-info">
+                        <h1>中山抽水站AI智慧調度系統</h1>
+                        <div class="station-details">
+                            <span><i class="fas fa-map-marker-alt"></i> 中山區濟江街97號</span>
+                            <span><i class="fas fa-phone"></i> 2505-3676</span>
+                            <span><i class="fas fa-chart-area"></i> 集水面積: 536公頃</span>
+                            <span><i class="fas fa-tachometer-alt"></i> 總抽水量: 63 C.M.S</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="header-status">
+                    <div class="ai-status">
+                        <div class="ai-indicator">
+                            <div class="ai-pulse"></div>
+                            <span class="ai-accuracy">88.24%</span>
+                        </div>
+                        <span class="ai-label">AI準確度</span>
+                    </div>
+                    <div class="system-time">
+                        <div class="time-display" id="currentTime"></div>
+                        <div class="date-display" id="currentDate"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主儀表板 -->
+        <main class="dashboard">
+            
+            <!-- 左側面板：水位監控 -->
+            <section class="left-panel">
+                
+                <!-- 3D水位監控器 -->
+                <div class="monitor-card water-level-monitor">
+                    <div class="card-header">
+                        <h3><i class="fas fa-water"></i> 即時水位監控</h3>
+                        <div class="status-badge" id="waterStatus">正常</div>
+                    </div>
+                    
+                    <div class="water-display">
+                        <div class="water-tank-3d">
+                            <div class="tank-container">
+                                <div class="water-level" id="waterLevel"></div>
+                                <div class="water-surface">
+                                    <div class="wave wave1"></div>
+                                    <div class="wave wave2"></div>
+                                </div>
+                                
+                                <!-- 警戒線 -->
+                                <div class="level-markers">
+                                    <div class="marker danger" style="bottom: 56%">
+                                        <span class="marker-line"></span>
+                                        <span class="marker-label">危險 1.4m</span>
+                                    </div>
+                                    <div class="marker warning" style="bottom: 52%">
+                                        <span class="marker-line"></span>
+                                        <span class="marker-label">警戒 1.3m</span>
+                                    </div>
+                                    <div class="marker caution" style="bottom: 48%">
+                                        <span class="marker-line"></span>
+                                        <span class="marker-label">注意 1.2m</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 數位顯示 -->
+                            <div class="digital-display">
+                                <div class="level-value" id="levelValue">1.15</div>
+                                <div class="level-unit">m</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 水位控制 -->
+                        <div class="level-controls">
+                            <label for="waterSlider">水位調整</label>
+                            <input type="range" id="waterSlider" min="0" max="2.5" step="0.01" value="1.15" class="water-slider">
+                            <div class="preset-buttons">
+                                <button class="preset-btn" data-level="0.8">正常</button>
+                                <button class="preset-btn" data-level="1.25">注意</button>
+                                <button class="preset-btn" data-level="1.35">警戒</button>
+                                <button class="preset-btn" data-level="1.45">危險</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 環境參數控制 -->
+                <div class="monitor-card environment-panel">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cloud-rain"></i> 環境參數</h3>
+                    </div>
+                    
+                    <div class="environment-controls">
+                        <div class="env-control">
+                            <label>降雨強度</label>
+                            <div class="slider-container">
+                                <input type="range" id="rainfallSlider" min="0" max="150" value="25" class="env-slider">
+                                <span class="slider-value" id="rainfallValue">25 mm/hr</span>
+                            </div>
+                            <div class="rain-animation" id="rainAnimation"></div>
+                        </div>
+                        
+                        <div class="env-control">
+                            <label>外水位</label>
+                            <div class="slider-container">
+                                <input type="range" id="externalSlider" min="-1" max="4" step="0.1" value="1.0" class="env-slider">
+                                <span class="slider-value" id="externalValue">1.0 m</span>
+                            </div>
+                        </div>
+                        
+                        <div class="env-control">
+                            <label>風速</label>
+                            <div class="slider-container">
+                                <input type="range" id="windSlider" min="0" max="30" value="5" class="env-slider">
+                                <span class="slider-value" id="windValue">5 m/s</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 中央面板：AI預測與圖表 -->
+            <section class="center-panel">
+                
+                <!-- AI預測面板 -->
+                <div class="monitor-card ai-prediction">
+                    <div class="card-header">
+                        <h3><i class="fas fa-brain"></i> AI智慧預測</h3>
+                        <div class="confidence-indicator">
+                            <div class="confidence-circle">
+                                <svg viewBox="0 0 100 100">
+                                    <circle class="confidence-bg" cx="50" cy="50" r="45"></circle>
+                                    <circle class="confidence-progress" cx="50" cy="50" r="45" id="confidenceCircle"></circle>
+                                </svg>
+                                <div class="confidence-text">
+                                    <span id="confidenceValue">88.24</span>%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="prediction-display">
+                        <div class="prediction-result" id="predictionResult">
+                            <div class="prediction-action">正在分析水位狀況...</div>
+                            <div class="prediction-details">
+                                <div class="detail-row">
+                                    <span>預測水位:</span>
+                                    <span id="predictedLevel">1.16m</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>建議啟動:</span>
+                                    <span id="recommendedPumps">2台</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>抽水能力:</span>
+                                    <span id="totalCapacity">13 C.M.S</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 水位趨勢圖 -->
+                <div class="monitor-card chart-panel">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> 水位趨勢分析</h3>
+                        <div class="chart-controls">
+                            <button class="chart-btn active" data-period="1h">1小時</button>
+                            <button class="chart-btn" data-period="6h">6小時</button>
+                            <button class="chart-btn" data-period="24h">24小時</button>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="waterLevelChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 右側面板：抽水機控制 -->
+            <section class="right-panel">
+                
+                <!-- 抽水機控制面板 -->
+                <div class="monitor-card pump-control">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cogs"></i> 抽水機控制</h3>
+                        <div class="pump-summary">
+                            <span class="active-count" id="activePumps">0</span>
+                            <span>/7 台運行</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pump-grid" id="pumpGrid">
+                        <!-- 抽水機狀態卡片將由JavaScript生成 -->
+                    </div>
+                    
+                    <div class="control-summary">
+                        <div class="summary-item">
+                            <label>總功率</label>
+                            <span id="totalPower">0 kW</span>
+                        </div>
+                        <div class="summary-item">
+                            <label>總流量</label>
+                            <span id="totalFlow">0 C.M.S</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 系統狀態監控 -->
+                <div class="monitor-card system-status">
+                    <div class="card-header">
+                        <h3><i class="fas fa-server"></i> 系統狀態</h3>
+                    </div>
+                    
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <div class="status-icon fuel">
+                                <i class="fas fa-gas-pump"></i>
+                            </div>
+                            <div class="status-info">
+                                <div class="status-title">燃料系統</div>
+                                <div class="status-value">正常 (110,000L)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-item">
+                            <div class="status-icon generator">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="status-info">
+                                <div class="status-title">發電機 M.A.N</div>
+                                <div class="status-value">待機 (500kW)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-item">
+                            <div class="status-icon power">
+                                <i class="fas fa-plug"></i>
+                            </div>
+                            <div class="status-info">
+                                <div class="status-title">電力系統</div>
+                                <div class="status-value">正常運行</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作日誌 -->
+                <div class="monitor-card operation-log">
+                    <div class="card-header">
+                        <h3><i class="fas fa-history"></i> 操作日誌</h3>
+                    </div>
+                    
+                    <div class="log-container" id="operationLog">
+                        <!-- 日誌項目將由JavaScript生成 -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 底部狀態欄 -->
+        <footer class="status-bar">
+            <div class="status-content">
+                <div class="system-info">
+                    <span><i class="fas fa-microchip"></i> AI引擎: LSTM v2.0</span>
+                    <span><i class="fas fa-database"></i> 訓練資料: 238個檔案</span>
+                    <span><i class="fas fa-shield-alt"></i> 系統安全: 正常</span>
+                </div>
+                
+                <div class="performance-metrics">
+                    <div class="metric">
+                        <span>CPU: 35%</span>
+                        <div class="metric-bar"><div class="metric-fill" style="width: 35%"></div></div>
+                    </div>
+                    <div class="metric">
+                        <span>記憶體: 62%</span>
+                        <div class="metric-bar"><div class="metric-fill" style="width: 62%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JavaScript載入 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="data/station-config.js"></script>
+    <script src="js/ai-engine.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
